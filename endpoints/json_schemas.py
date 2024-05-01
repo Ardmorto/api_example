@@ -10,3 +10,7 @@ class AllMemesData(BaseModel):
 
 class AllMemes(BaseModel):
     data: AllMemesData
+
+class AuthData(BaseModel):
+    token: str
+    user: str

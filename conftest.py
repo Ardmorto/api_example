@@ -25,7 +25,7 @@ def new_meme(authorization):
     headers.default_header.update(authorization)
     response = requests.post(
         'http://167.172.172.115:52355/meme',
-        json=payloads.new_meme_payload,
+        json=payloads.default_payload,
         headers=headers.default_header
     )
     id = response.json()['id']

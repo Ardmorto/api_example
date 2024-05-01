@@ -8,6 +8,16 @@ default_payload = {
         }
     }
 
+updated_payload = {
+        'text': 'Cat meme from Ardmorto!',
+        'url': 'https://here_is_a_cat_trust_me.com',
+        'tags': ['cat', 'it', 'updated'],
+        'info': {
+            'type': ['picture', 'webp format', 'ai generated'],
+            'rating': 0
+        }
+    }
+
 payload_without_url = {
         'text': 'Cat meme from Ardmorto!',
         'tags': ['cat', 'it'],

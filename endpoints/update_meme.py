@@ -4,13 +4,14 @@ from endpoints.base_endpoint import BaseEndpoint
 from endpoints.json_schemas import DefaultData
 
 class UpdateMeme(BaseEndpoint):
-    def update_meme(self, id_dict):
+    def update_meme(self, id_dict, payload=None):
         headers.default_header.update(self.token)
-        payloads.updated_payload.update(id_dict)
+        payload = payload if payload else payloads.updated_payload
+        payload.update(id_dict)
 
         self.response = requests.put(
             f'http://167.172.172.115:52355/meme/{id_dict['id']}',
-            json=payloads.updated_payload,
+            json=payload,
             headers=headers.default_header
         )
         if self.response.status_code == 200:

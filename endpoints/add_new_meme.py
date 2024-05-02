@@ -5,11 +5,12 @@ from endpoints.json_schemas import DefaultData
 
 class AddMeme(BaseEndpoint):
 
-    def add_new_meme(self):
+    def add_new_meme(self, payload=None):
+        payload = payload if payload else payloads.default_payload
         headers.default_header.update(self.token)
         self.response = requests.post(
             'http://167.172.172.115:52355/meme',
-            json=payloads.default_payload,
+            json=payload,
             headers=headers.default_header
         )
         if self.response.status_code == 200:

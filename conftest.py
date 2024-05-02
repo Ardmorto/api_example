@@ -1,39 +1,44 @@
 import pytest
-import requests
 import os
-from test_data import payloads, headers
 from endpoints.get_all_memes import GetAllMemes
 from endpoints.get_meme_by_id import MemeById
 from endpoints.add_new_meme import AddMeme
 from endpoints.update_meme import UpdateMeme
+from endpoints.authorize import Authorize
+from endpoints.check_token import CheckToken
+from endpoints.delete_meme import DeleteMeme
 
-@pytest.fixture(scope='session')
-def authorization():
+@pytest.fixture()
+def authorization(check_token_endp, authorization_endp):
     token = os.getenv('MEME_API_TOKEN')
-    if not token:
-        response = requests.post(
-            'http://167.172.172.115:52355/authorize',
-            json=payloads.credentials,
-            headers=headers.default_header
-        )
-        token = response.json()['token']
-        os.environ['MEME_API_TOKEN'] = token
-    return {'Authorization': token}
+    if token and check_token_endp.check_token_is_alive(token):
+        pass
+    else:
+        os.environ['MEME_API_TOKEN'] = authorization_endp.get_token()
+        token = os.getenv('MEME_API_TOKEN')
+    token_dict = {'Authorization': token}
+    return token_dict
 
 @pytest.fixture
-def new_meme(authorization):
-    headers.default_header.update(authorization)
-    response = requests.post(
-        'http://167.172.172.115:52355/meme',
-        json=payloads.default_payload,
-        headers=headers.default_header
-    )
-    id = response.json()['id']
+def new_meme(add_meme_endp, delete_meme_endp):
+    add_meme_endp.add_new_meme()
+    id = add_meme_endp.data.id
     yield {'id': id}
-    requests.delete(
-        f'http://167.172.172.115:52355/meme/{id}',
-        headers=headers.default_header
-    )
+    delete_meme_endp.delete_meme(id)
+
+@pytest.fixture
+def new_meme_without_deletion(add_meme_endp):
+    add_meme_endp.add_new_meme()
+    id = add_meme_endp.data.id
+    yield {'id': id}
+
+@pytest.fixture()
+def authorization_endp():
+    return Authorize()
+
+@pytest.fixture()
+def check_token_endp():
+    return CheckToken()
 
 @pytest.fixture()
 def all_memes_endp(authorization):
@@ -50,3 +55,7 @@ def add_meme_endp(authorization):
 @pytest.fixture()
 def meme_upd_endp(authorization):
     return UpdateMeme(authorization)
+
+@pytest.fixture()
+def delete_meme_endp(authorization):
+    return DeleteMeme(authorization)

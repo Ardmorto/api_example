@@ -1,9 +1,9 @@
 import requests
 from test_data import payloads, headers
-from endpoints.base_endpoint import BaseEndpoint
 from endpoints.json_schemas import AuthData
 
-class Authorize(BaseEndpoint):
+
+class Authorize():
     def get_token(self):
         self.response = requests.post(
             'http://167.172.172.115:52355/authorize',
@@ -12,6 +12,10 @@ class Authorize(BaseEndpoint):
         )
         if self.response.status_code == 200:
             self.data = AuthData(**self.response.json())
+        return self.data.token
 
-    def check_username(self, username):
-        assert self.data.user == username
+    def check_response_is_200(self):
+        assert self.response.status_code == 200
+
+    def check_username(self):
+        assert self.data.user == payloads.credentials['name']

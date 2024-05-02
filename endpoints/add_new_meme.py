@@ -1,6 +1,7 @@
 import requests
 from test_data import payloads, headers
 from endpoints.base_endpoint import BaseEndpoint
+from endpoints.json_schemas import DefaultData
 
 class AddMeme(BaseEndpoint):
 
@@ -11,4 +12,11 @@ class AddMeme(BaseEndpoint):
             json=payloads.default_payload,
             headers=headers.default_header
         )
-        self.data = self.response.json()
+        if self.response.status_code == 200:
+            self.data = DefaultData(**self.response.json())
+
+    def check_id_assigned(self):
+        assert self.data.id != None
+
+    def check_username_is_correct(self):
+        assert self.data.updated_by == payloads.credentials['name']
